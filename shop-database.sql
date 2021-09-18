@@ -1,0 +1,204 @@
+create database test
+go
+use test
+go
+
+CREATE TABLE customer
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ firstName VARCHAR(100) NOT NULL,
+ lastName VARCHAR(100) NOT NULL,
+ passwordX VARCHAR(50) NOT NULL,
+ gender BIT DEFAULT(0)
+);
+
+CREATE TABLE phoneCustomer
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ phone_number NCHAR(20) NOT NULL,
+ customer_id INT NOT NULL REFERENCES customer(id)
+);
+
+CREATE TABLE emailCustomer
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ email VARCHAR(100) NOT NULL,
+ customer_id INT NOT NULL REFERENCES customer(id)
+);
+
+CREATE TABLE addressCustomer
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ postalCode NCHAR(10) NOT NULL,
+ addressX VARCHAR(500) NOT NULL,
+ customer_id INT NOT NULL REFERENCES customer(id)
+);
+
+CREATE TABLE supplier
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ companyName VARCHAR(100) NOT NULL,
+ contactName VARCHAR(100) NOT NULL,
+ contactFname VARCHAR(100) NOT NULL,
+ contactTitle VARCHAR(100) NOT NULL,
+ addressX VARCHAR(300) NOT NULL,
+ city VARCHAR(50) NOT NULL,
+ stateX VARCHAR(100) NOT NULL,
+ country VARCHAR(100) NOT NULL,
+ postalcode NCHAR(10) NOT NULL,
+ fax NCHAR(20) NOT NULL,
+ url VARCHAR(100) NOT NULL,
+);
+
+CREATE TABLE phoneSupplier
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ phone_number NCHAR(20) NOT NULL,
+ supplier_id INT NOT NULL REFERENCES supplier(id)
+);
+
+CREATE TABLE emailSupplier
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ email VARCHAR(100) NOT NULL,
+ supplier_id INT NOT NULL REFERENCES supplier(id)
+);
+
+CREATE TABLE staff
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ firstName VARCHAR(100) NOT NULL,
+ lastName VARCHAR(100) NOT NULL,
+ statusX NCHAR(2) NOT NULL,
+ position VARCHAR(100) NOT NULL,
+ manager_id INT NOT NULL REFERENCES staff(id),
+ paycheck INT NOT NULL,
+ hireDate DATETIME NOT NULL,
+ addressX VARCHAR(500) NOT NULL,
+ city VARCHAR(100) NOT NULL,
+ gender BIT DEFAULT(0)
+);
+
+CREATE TABLE phoneStaff
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ phone_number NCHAR(20) NOT NULL,
+ staff_id INT NOT NULL REFERENCES staff(id)
+);
+
+CREATE TABLE emailStaff
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ email VARCHAR(100) NOT NULL,
+ staff_id INT NOT NULL REFERENCES staff(id)
+);
+
+
+CREATE TABLE category
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ parentId INT NOT NULL REFERENCES category(id),
+ title VARCHAR(100) NOT NULL,
+ describtion VARCHAR(500) NOT NULL
+);
+
+
+CREATE TABLE quantity
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ number INT NOT NULL,
+ lastShipment DATETIME DEFAULT (GETDATE()),
+ initialValue INT NOT NULL,
+ counterX INT NOT NULL DEFAULT(0),
+ supplier_id INT NOT NULL REFERENCES supplier(id)
+);
+
+CREATE TABLE discount
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ percentX INT DEFAULT NULL,
+ typeX VARCHAR(40) DEFAULT NULL
+);
+
+
+
+CREATE TABLE product
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ title VARCHAR(100) NOT NULL,
+ typeX SMALLINT NOT NULL,
+ price INT NOT NULL,
+ createdAt DATETIME DEFAULT (GETDATE()),
+ updatedAt DATETIME DEFAULT(NULL),
+ publishedAt DATETIME DEFAULT(NULL),
+ startsAt DATETIME DEFAULT(NULL),
+ endsAt DATETIME DEFAULT(NULL),
+ discount_id INT NOT NULL REFERENCES discount(id),
+ quantity_id INT NOT NULL REFERENCES quantity(id));
+
+CREATE TABLE product_category
+(
+ category_id INT NOT NULL REFERENCES category(id),
+ product_id INT NOT NULL REFERENCES product(id)
+);
+
+
+CREATE TABLE product_meta
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ descriptionX VARCHAR(500) DEFAULT(NULL),
+ picture VARCHAR(500)DEFAULT(NULL),
+ content VARCHAR(500) DEFAULT(NULL),
+ size VARCHAR(500) DEFAULT(NULL),
+ packaging VARCHAR(500) DEFAULT(NULL),
+ weightX INT DEFAULT(NULL),
+ calories INT DEFAULT(NULL),
+ sugar FLOAT DEFAULT(NULL),
+ salt FLOAT DEFAULT(NULL),
+ fat FLOAT DEFAULT(NULL),
+ portionSize VARCHAR(500)DEFAULT(NULL),
+ production_date DATETIME DEFAULT(NULL),
+ expiration_date DATETIME DEFAULT(NULL),
+ warnings VARCHAR(500) DEFAULT(NULL),
+ product_id INT NOT NULL REFERENCES product(id)
+);
+
+
+CREATE TABLE orderX
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ statusX SMALLINT NOT NULL,
+ tax FLOAT NOT NULL,
+ shipping INT NOT NULL,
+ orderDate DATETIME DEFAULT (GETDATE()),
+ payment SMALLINT NOT NULL DEFAULT(0),
+ shippedDate DATETIME DEFAULT(NULL),
+ customer_id INT NOT NULL REFERENCES customer(id),
+ discount_id INT NOT NULL REFERENCES discount(id),
+ staff_id INT NOT NULL REFERENCES staff(id)
+);
+
+
+
+
+CREATE TABLE order_items
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ priceperone INT NOT NULL,
+ quantity_id INT NOT NULL REFERENCES quantity(id),
+ order_id INT NOT NULL REFERENCES orderX(id),
+ discount_id INT NOT NULL REFERENCES discount(id),
+ product_id INT NOT NULL REFERENCES product(id)
+);
+
+CREATE TABLE product_review
+(
+ id INT NOT NULL PRIMARY KEY IDENTITY,
+ title VARCHAR(50) NOT NULL,
+ rating SMALLINT NOT NULL,
+ publishedAt DATETIME DEFAULT (GETDATE()),
+ content VARCHAR(500) NOT NULL,
+ response VARCHAR(500) DEFAULT(NULL),
+ customer_id INT NOT NULL REFERENCES customer(id),
+ productid INT NOT NULL REFERENCES product(id)
+);
